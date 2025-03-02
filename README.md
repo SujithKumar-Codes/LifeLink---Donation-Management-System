@@ -22,11 +22,11 @@ LifeLink is a web-based platform designed to streamline organ pledging, organ re
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/lifelink.git
+   git clone https://github.com/SujithKumar-Codes/LifeLink---Donation-Management-System.git
    ```
 2. Navigate to the project directory:
    ```sh
-   cd lifelink
+   cd DBMS_original
    ```
 3. Install dependencies:
    ```sh
