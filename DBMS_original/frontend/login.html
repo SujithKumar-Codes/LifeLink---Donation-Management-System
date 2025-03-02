@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In - LifeLink</title>
+  <link rel="stylesheet" href="../dist/output.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: linear-gradient(120deg, #e05d5d, #dc734c, #FF7F7F, #FFB6C1);
+      background-size: 400% 400%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      animation: gradientShift 6s ease infinite;
+      /* Add 'ease' for smoother transition */
+    }
+
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%;
+        /* Start position */
+      }
+
+      50% {
+        background-position: 100% 50%;
+        /* Mid transition */
+      }
+
+      100% {
+        background-position: 0% 50%;
+        /* End position */
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="text-black body-font">
+    <div class="container px-5 py-24 mx-auto flex flex-wrap items-center">
+      <div class="lg:w-3/5 md:w-1/2 md:pr-16 lg:pr-0 pr-0">
+        <h1 class="title-font font-medium text-4xl text-black">Welcome back to LifeLink – Your Connection to Saving
+          Lives!</h1>
+        <p class="leading-relaxed text-xl mt-4">Log in to donate blood, request blood, pledge organs, and request organs to make
+          a difference today!</p>
+      </div>
+      <div class="lg:w-2/6 md:w-1/2 bg-gray-100 rounded-lg p-8 flex flex-col md:ml-auto w-full mt-10 md:mt-0">
+        <h2 class="text-black text-lg font-medium title-font mb-5">Login</h2>
+        <form id="loginForm">
+          <div class="relative mb-4">
+            <label for="email" class="leading-7 text-sm text-black">Email</label>
+            <input type="email" id="email" name="email" required
+              class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+          </div>
+          <div class="relative mb-4">
+            <label for="password" class="leading-7 text-sm text-black">Password</label>
+            <input type="password" id="password" name="password" required
+              class="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
+          </div>
+          <button type="submit"
+            class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">Login</button>
+        </form>
+        <p id="error-message" class="text-red-500 mt-3" style="display: none;"></p>
+        <p class="text-xs text-black mt-3">Don't have an account? <a style="color: rgb(1, 1, 255);"
+            href="register.html">Register</a></p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // JavaScript for login form
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault(); // Prevent default form submission
+
+      // Get the email and password values
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        // Make the login API request
+        const response = await fetch('http://localhost:3001/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+          mode: 'cors',
+        });
+
+        const data = await response.json(); // Parse the JSON response
+
+        if (data.success) {
+          // Store important information in localStorage
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('userName', data.name);
+          localStorage.setItem('userId', data.userId); // Store the user ID
+
+          // Redirect to the dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          // Display error message
+          const errorMessage = document.getElementById('error-message');
+          errorMessage.style.display = 'block';
+          errorMessage.textContent = data.message;
+        }
+      } catch (error) {
+        // Handle network or server errors
+        const errorMessage = document.getElementById('error-message');
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'An error occurred. Please try again.';
+        console.error('Error:', error);
+      }
+    });
+  </script>
+
+</body>
+
+</html>

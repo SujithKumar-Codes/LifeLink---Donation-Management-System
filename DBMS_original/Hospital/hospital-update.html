@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Update Hospital Facility</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(120deg, #e05d5d, #dc734c, #FF7F7F, #FFB6C1);
+            background-size: 400% 400%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            animation: gradientShift 6s ease infinite;
+            /* Add 'ease' for smoother transition */
+        }
+
+        /* Define keyframes for the background gradient animation */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+                /* Start position */
+            }
+
+            50% {
+                background-position: 100% 50%;
+                /* Mid transition */
+            }
+
+            100% {
+                background-position: 0% 50%;
+                /* End position */
+            }
+
+        }
+
+        #status p {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Success Message */
+        #status p.success {
+            color: green;
+        }
+
+        /* Error Message */
+        #status p.error {
+            color: red;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        label {
+            margin: 8px 0 4px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h1>Update Your Hospital Details</h1> -->
+    <form id="hospitalUpdateForm">
+        <label for="facility_id">Facility ID:</label>
+        <input type="text" id="facility_id" required>
+
+        <label for="name">Hospital Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" required>
+
+        <label for="contact">Contact Number:</label>
+        <input type="text" id="contact" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="availableResources">Available Resources (Comma-separated):</label>
+        <input type="text" id="availableResources" required>
+
+        <button type="submit">Update Facility</button>
+    </form>
+
+    <div id="status"></div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        document.getElementById('hospitalUpdateForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const facility_id = document.getElementById('facility_id').value;
+            const name = document.getElementById('name').value;
+            const location = document.getElementById('location').value;
+            const contact = document.getElementById('contact').value;
+            const email = document.getElementById('email').value;
+            const availableResources = document.getElementById('availableResources').value;
+
+            // Form validation
+            if (!facility_id || !name || !location || !contact || !email || !availableResources) {
+                alert('All fields are required');
+                return;
+            }
+
+            // Show loading message
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<p>Updating hospital details...</p>';
+
+            // Send PUT request to update hospital
+            const response = await fetch('http://localhost:3001/api/hospital-update', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                },
+                body: JSON.stringify({
+                    facility_id,
+                    name,
+                    location,
+                    contact,
+                    email,
+                    available_resources: availableResources,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                statusDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+            } else {
+                statusDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

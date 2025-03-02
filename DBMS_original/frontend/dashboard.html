@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - LifeLink</title>
+    <!-- <link rel="stylesheet" href="../css/main.css"> -->
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            /* background: linear-gradient(to right, rgb(242, 112, 156), rgb(255, 148, 114)); */
+            position: relative;
+            /* border-bottom: 2px solid pink; */
+        }
+
+        .header img:nth-child(1) {
+            position: absolute;
+            left: 1.5%;
+            cursor: pointer;
+        }
+
+        .background {
+            position: absolute;
+            z-index: 0;
+            width: 100%;
+            height: 72vh;
+
+        }
+
+        .contents {
+            /* background-color: #eeeee4; */
+            /* background-color: #f6f1f1;
+            padding: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around; */
+            /* background: linear-gradient(to right, rgb(242, 112, 156), rgb(255, 148, 114)); */
+            height: 84vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .foreground {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            position: relative;
+            gap: 60px;
+        }
+
+        .blood {
+            height: 50vh;
+            width: 300px;
+            border-radius: 35px;
+        }
+
+        .organ {
+            height: 50vh;
+            width: 350px;
+            border-radius: 35px;
+        }
+
+        button {
+            /* padding: 10px;
+            width: 300px;
+            border-radius: 15px;
+            cursor: pointer; */
+
+            width: 300px;
+            background-color: #4CAF50;
+            /* Button background color */
+            color: white;
+            font-weight: bolder;
+            /* Button text color */
+            padding: 12px 20px;
+            /* Padding inside the button */
+            border: none;
+            /* Remove the default border */
+            border-radius: 8px;
+            /* Rounded corners */
+            font-size: 16px;
+            /* Font size */
+            cursor: pointer;
+            /* Change cursor to pointer on hover */
+            transition: all 0.3s ease;
+            /* Smooth transition */
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            /* Move button 5px up */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            /* Shadow effect */
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            transition: all .3s;
+            position: absolute;
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+            z-index: 2;
+            left: -130%;
+        }
+
+        .sidebar h2 {
+            /* margin-bottom: 30px; */
+            font-size: 24px;
+            color: #ecf0f1;
+        }
+
+        .sidebar nav ul {
+            list-style-type: none;
+        }
+
+        .sidebar nav ul li {
+            margin: 15px 0;
+        }
+
+        .sidebar nav ul li a {
+            color: #ecf0f1;
+            text-decoration: none;
+            font-size: 18px;
+            transition: color 0.3s;
+        }
+
+        .sidebar nav ul li a:hover {
+            color: #e74c3c;
+        }
+
+        .sidebar div {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .close {
+            cursor: pointer;
+        }
+
+        .innerContainer {
+            background-color: rgb(239, 239, 239);
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+            /* Adding shadow */
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="../css/utilities.css">
+
+</head>
+
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div>
+            <h2>Welcome, <span id="userName"></span></h2>
+            <div class="close">
+                <img class="invert" src="../svg/close.svg" alt="">
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="blood-donation.html">Blood Donation</a></li>
+                <li><a href="blood-request.html">Blood Request</a></li>
+                <li><a href="organ-pledge.html">Organ Pledge</a></li>
+                <li><a href="organ-request.html">Organ Request</a></li>
+                <li><a href="all-transactions.html">View Transactions</a></li>
+                <li><a href="login.html" onclick="logout()">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="header">
+        <div class="hamburger flex">
+            <img src="../svg/hamburger.svg" alt="">
+        </div>
+
+            <img width="40px" src="../svg/icon.svg" alt="">
+
+            <p
+                style="font-size: 50px; font-family: cursive; font-weight: bold; -webkit-text-stroke: 2px white; color: black;"> 
+                LifeLink
+            </p>
+
+        <!-- <p style="font-size: 40px; font-family: cursive; font-weight: bold;">LifeLink</p> -->
+    </div>
+
+
+    <div class="contents">
+
+
+        <!-- <img class="background" src="../img/background.jpg" alt=""> -->
+
+        <div class="foreground">
+            <img class="blood" src="../img/blood.jpg" alt="">
+
+            <div class="innerContainer">
+                <div class="buttons">
+                    <a href="blood-request.html"><button>Request Blood</button></a><br>
+                    <a href="blood-donation.html"><button>Donate Blood</button></a><br>
+                    <a href="organ-request.html"><button>Request Organ</button></a><br>
+                    <a href="organ-pledge.html"><button>Donate Organ</button></a>
+                </div>
+            </div>
+
+            <img class="organ" src="../img/organ.jpg" alt="">
+        </div>
+
+    </div>
+
+    <script>
+        // Display the logged-in user's name
+        document.getElementById('userName').innerText = localStorage.getItem('userName');
+
+        // Logout function to clear localStorage and redirect to login
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html'; // Redirect to login page
+        }
+
+        //Event Listener for Hamburger
+        document.querySelector(".hamburger").addEventListener("click", () => {
+            console.log("Hamburger clicked")
+            document.querySelector(".sidebar").style.left = "0%";
+        })
+
+        //Event listener for close button
+        document.querySelector(".close").addEventListener("click", () => {
+            document.querySelector(".sidebar").style.left = "-130%";
+        })
+
+    </script>
+</body>
+
+</html>

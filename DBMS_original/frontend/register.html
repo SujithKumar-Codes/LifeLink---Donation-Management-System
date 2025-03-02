@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - LifeLink</title>
+    <link rel="stylesheet" href="../dist/output.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(120deg, #e05d5d, #dc734c, #FF7F7F, #FFB6C1);
+            background-size: 400% 400%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-input {
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+            width: 100%;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: #00aaff;
+        }
+
+        .form-button {
+            background-color: #ec4848;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-button:hover {
+            background-color: #e42c2c;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #00aaff;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="form-container">
+        <h3 class="form-title">Create an Account</h3>
+        <form id="registerForm">
+            <div>
+                <label class="block text-sm mb-2">Name</label>
+                <input id="name" name="name" type="text" required class="form-input" placeholder="Enter your name" />
+            </div>
+
+            <div>
+                <label class="block text-sm mb-2">Email Id</label>
+                <input id="email" name="email" type="email" required class="form-input" placeholder="Enter your email" />
+            </div>
+
+            <div>
+                <label class="block text-sm mb-2">Password</label>
+                <input id="password" name="password" type="password" required class="form-input" placeholder="Enter your password" />
+            </div>
+
+            <div>
+                <label class="block text-sm mb-2">Location</label>
+                <input id="location" name="location" type="text" required class="form-input" placeholder="Enter your location" />
+            </div>
+
+            <div class="flex items-center">
+                <input id="acceptTerms" name="acceptTerms" type="checkbox" class="mr-2 h-4 w-4 text-blue-600" />
+                <label for="acceptTerms" class="text-sm">I accept the <a href="javascript:void(0);" class="text-blue-600">Terms and Conditions</a></label>
+            </div>
+            <br>
+
+            <div id="error-message" class="error-message"></div>
+
+            <button type="submit" class="form-button">Create an account</button>
+        </form>
+
+        <p class="form-footer">Already have an account? <a style="color: rgb(102, 102, 246);" href="login.html">Login here</a></p>
+    </div>
+
+    <script>
+        // Handle registration form submission
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const location = document.getElementById('location').value; // Capture location value
+            const acceptTerms = document.getElementById('acceptTerms').checked;
+
+            // Validate inputs
+            if (!acceptTerms) {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = "You must accept the Terms and Conditions.";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            if(password.length > 8){
+
+            const response = await fetch('http://localhost:3001/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, password, location }), // Include location in request body
+            });
+        
+            const data = await response.json();
+
+            if (data.success) {
+                alert("Registration successful! Redirecting to login page.");
+                window.location.href = 'login.html'; // Redirect after success
+            } else {
+                const errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = data.message;
+                errorMessage.style.display = "block";
+            }
+        }else{
+            alert("Password is less than 8 characters")
+        }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Blood Request</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(120deg, #e05d5d, #dc734c, #FF7F7F, #FFB6C1);
+            background-size: 400% 400%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Form container styling */
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 450px;
+            max-width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Styling for the status messages */
+        #status {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        #status p {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        /* Success message */
+        #status p.success {
+            background-color: #e7f9ed;
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+        }
+
+        /* Error message */
+        #status p.error {
+            background-color: #fdecea;
+            color: #d32f2f;
+            border: 1px solid #d32f2f;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th,
+        table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .select-btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .select-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .select-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <div class="form-container">
+        <h1>Request Blood</h1>
+        <form id="bloodRequestForm">
+            <label for="bloodGroup">Blood Group:</label>
+            <select id="bloodGroup" required>
+                <option value="">-- Select Blood Group --</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+            </select>
+
+            <label for="location">Your Location:</label>
+            <input type="text" id="location" placeholder="Enter City or Address" required>
+
+            <button type="submit">Submit Request</button>
+        </form>
+
+        <div id="status"></div>
+        <div id="tables">
+            <h2>Blood Banks</h2>
+            <table id="bloodBanksTable"></table>
+
+            <h2>Donors</h2>
+            <table id="donorsTable"></table>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        let isOptionSelected = false;
+
+        document.getElementById('bloodRequestForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const bloodGroup = document.getElementById('bloodGroup').value;
+    const location = document.getElementById('location').value;
+
+    try {
+        // Fetch location using Google Places API (or similar)
+        const locationResponse = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=XXXXXXXXX`);
+        const locationData = await locationResponse.json();
+
+        if (locationData.status !== 'OK' || !locationData.results.length) {
+            throw new Error('Location not found or invalid.');
+        }
+        
+        const latitude = locationData.results[0].geometry.location.lat;
+        const longitude = locationData.results[0].geometry.location.lng;
+
+        // Send the request to fetch nearby blood banks and donors
+        const response = await fetch('http://localhost:3001/api/blood-request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': token,
+            },
+            body: JSON.stringify({ blood_group: bloodGroup, location, latitude, longitude }),
+        });
+
+        const data = await response.json();
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = ''; 
+
+        if (data.success) {
+            // Display success message
+            statusDiv.innerHTML = `<p class="success">${data.message}</p>`;
+
+            const bloodBanksTable = document.getElementById('bloodBanksTable');
+            const donorsTable = document.getElementById('donorsTable');
+
+            // Clear existing tables
+            bloodBanksTable.innerHTML = '';
+            donorsTable.innerHTML = '';
+
+            // Add headers
+            bloodBanksTable.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            `;
+            donorsTable.innerHTML = `
+                <tr>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Action</th>
+                </tr>
+            `;
+
+            // Add blood banks to table
+            if (Array.isArray(data.bloodBanks)) {
+                data.bloodBanks.forEach(bank => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${bank.name}</td>
+                        <td>${bank.location}</td>
+                        <td><button class="select-btn" onclick="selectOption(${data.transaction_id}, 'blood_bank', ${bank.id})">Select</button></td>
+                    `;
+                    bloodBanksTable.appendChild(row);
+                });
+            }
+
+            // Add donors to table
+            if (Array.isArray(data.donors)) {
+                data.donors.forEach(donor => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${donor.name}</td>
+                        <td>${donor.location}</td>
+                        <td><button class="select-btn" onclick="selectOption(${data.transaction_id}, 'donor', ${donor.donor_id})">Select</button></td>
+                    `;
+                    donorsTable.appendChild(row);
+                });
+            }
+        } else {
+            statusDiv.innerHTML = `<p class="error">${data.message}</p>`;
+        }
+    } catch (error) {
+        console.error(error);
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+    }
+});
+
+        async function selectOption(transaction_id, option_type, option_id) {
+            if (isOptionSelected) {
+                alert('You have already selected an option.');
+                return;
+            }
+
+            const response = await fetch('http://localhost:3001/api/select-option', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,
+                },
+                body: JSON.stringify({ transaction_id, option_type, option_id }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                isOptionSelected = true;
+                alert(data.message);
+
+                // Disable all select buttons
+                const buttons = document.querySelectorAll('.select-btn');
+                buttons.forEach(button => button.disabled = true);
+            } else {
+                alert(data.message);
+            }
+        }
+    </script>
+</body>
+
+</html>
+

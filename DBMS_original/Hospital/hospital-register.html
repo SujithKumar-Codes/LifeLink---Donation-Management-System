@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Hospital Registration</title>
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: linear-gradient(120deg, #e05d5d, #dc734c, #FF7F7F, #FFB6C1);
+            background-size: 400% 400%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            animation: gradientShift 6s ease infinite;
+            /* Add 'ease' for smoother transition */
+        }
+
+        /* Define keyframes for the background gradient animation */
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+                /* Start position */
+            }
+
+            50% {
+                background-position: 100% 50%;
+                /* Mid transition */
+            }
+
+            100% {
+                background-position: 0% 50%;
+                /* End position */
+            }
+
+        }
+
+        /* Styling for status messages */
+        #status p {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Success Message */
+        #status p.success {
+            color: green;
+        }
+
+        /* Error Message */
+        #status p.error {
+            color: red;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        label {
+            margin: 8px 0 4px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1.2em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:active {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <h1>Register Your Hospital</h1> -->
+    <div id="status"></div>
+    <form id="hospitalRegisterForm">
+        <label for="name">Hospital Name:</label>
+        <input type="text" id="name" required>
+
+        <label for="location">Location:</label>
+        <input type="text" id="location" required>
+
+        <label for="contact">Contact Number:</label>
+        <input type="text" id="contact" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <label for="availableResources">Available Resources (Comma-separated, e.g., 'Kidney, Heart'):</label>
+        <input type="text" id="availableResources" required>
+
+        <button type="submit">Register Facility</button>
+    </form>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const statusDiv = document.getElementById('status');
+
+        // First check if the user already has a hospital registered
+        async function checkHospitalRegistration() {
+            const response = await fetch('http://localhost:3001/api/check-hospital-registration', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Redirect to dashboard if the hospital is already registered
+                window.location.href = 'hospital-dashboard.html';
+            }
+        }
+
+        checkHospitalRegistration(); // Check for existing hospital registration on page load
+
+        document.getElementById('hospitalRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const location = document.getElementById('location').value;
+            const contact = document.getElementById('contact').value;
+            const email = document.getElementById('email').value;
+            const availableResources = document.getElementById('availableResources').value;
+
+            // Input validation
+            if (!name || !location || !contact || !email || !availableResources) {
+                alert('All fields are required');
+                return;
+            }
+
+            // Show loading or submission message
+            statusDiv.innerHTML = '<p>Registering hospital...</p>';
+
+            // Send registration request
+            const response = await fetch('http://localhost:3001/api/hospital-register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token,  // Pass token for authorization
+                },
+                body: JSON.stringify({
+                    name,
+                    location,
+                    contact,
+                    email,
+                    available_resources: availableResources,
+                }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                statusDiv.innerHTML = `<p class="success">${data.message}</p>`;
+                // After successful registration, redirect to the dashboard
+                setTimeout(() => {
+                    window.location.href = 'hospital-dashboard.html';
+                }, 2000); // Redirect after 2 seconds
+            } else {
+                statusDiv.innerHTML = `<p class="error">${data.message}</p>`;
+            }
+        });
+    </script>
+</body>
+
+</html>

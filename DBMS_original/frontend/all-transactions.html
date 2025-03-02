@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Transactions</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #2980B9;
+            margin-bottom: 10px;
+        }
+
+        /* Transaction Cards Styling */
+        .transaction-card {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .transaction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .transaction-card p {
+            margin: 8px 0;
+            font-size: 18px;
+        }
+
+        .transaction-card p strong {
+            color: #2C3E50;
+        }
+
+        .transaction-card p span {
+            color: #7F8C8D;
+            font-weight: bold;
+        }
+
+        /* Button Styling */
+        .transaction-card button {
+            padding: 10px 20px;
+            margin-top: 15px;
+            cursor: pointer;
+            border: none;
+            background-color: #2980B9;
+            color: white;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .transaction-card button:hover {
+            background-color: #3498db;
+        }
+
+        /* Container Styling */
+        #transactions {
+            width: 80%;
+            margin: 0 auto;
+        }
+
+        /* Error Message Styling */
+        .error-message {
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .transaction-card {
+                padding: 15px;
+            }
+
+            .transaction-card p {
+                font-size: 16px;
+            }
+
+            #transactions {
+                width: 95%;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Your Transactions</h1>
+    <div id="transactions"></div>
+
+    <script>
+        const token = localStorage.getItem('token');
+
+        async function fetchTransactions() {
+            try {
+                const response = await fetch('http://localhost:3001/api/organ-history', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': token,
+                    },
+                });
+
+                const data = await response.json();
+                const transactionsDiv = document.getElementById('transactions');
+                transactionsDiv.innerHTML = ''; // Clear previous content
+
+                if (data.success) {
+                    data.transactions.forEach((transaction) => {
+                        transactionsDiv.innerHTML += `
+                            <div class="transaction-card">
+                                <p><strong>Organ:</strong> ${transaction.organ_type}</p>
+                                <p><strong>Type:</strong> ${transaction.transaction_type.charAt(0).toUpperCase() + transaction.transaction_type.slice(1)}</p>
+                                <p><strong>Status:</strong> ${transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}</p>
+                                <p><strong>Facility:</strong> ${transaction.facility_name}</p>
+                                <p><strong>Location:</strong> ${transaction.facility_location}</p>
+                            </div>
+                        `;
+                    });
+                } else {
+                    transactionsDiv.innerHTML = `<div class="error-message">${data.message}</div>`;
+                }
+            } catch (err) {
+                console.error('Error fetching transactions:', err);
+                document.getElementById('transactions').innerHTML = `<div class="error-message">Error fetching transactions. Please try again later.</div>`;
+            }
+        }
+
+        fetchTransactions();
+    </script>
+</body>
+
+</html>

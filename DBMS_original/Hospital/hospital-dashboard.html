@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Dashboard</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            line-height: 1.6;
+            margin: 20px;
+        }
+
+        h1, h2 {
+            color: #2C3E50;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        #requestsSection, #pledgesSection {
+            margin: 20px auto;
+            width: 80%;
+        }
+
+        /* Transaction Card Styling */
+        .transaction-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .transaction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .transaction-card p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .transaction-card p strong {
+            color: #2980B9;
+        }
+
+        /* Button Styling */
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button:nth-child(1) {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        button:nth-child(1):hover {
+            background-color: #45a049;
+        }
+
+        button:nth-child(2) {
+            background-color: #f44336;
+            color: white;
+        }
+
+        button:nth-child(2):hover {
+            background-color: #e53935;
+        }
+
+        /* Section Styling */
+        #requestsSection, #pledgesSection {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+
+            #requestsSection, #pledgesSection {
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .transaction-card {
+                padding: 15px;
+            }
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #ffcccc;
+            color: #c0392b;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>Hospital Dashboard</h1>
+
+    <div id="requestsSection">
+        <h2>Pending Organ Requests</h2>
+        <div id="pendingRequests"></div>
+    </div>
+
+    <div id="pledgesSection">
+        <h2>Pending Organ Pledges</h2>
+        <div id="pendingPledges"></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');  // Hospital's token
+
+        // Check if token exists, if not redirect to login page
+        if (!token) {
+            window.location.href = 'hospital-login.html'; // Redirect to login page if no token found
+        }
+
+        // Fetch pending requests and pledges for the hospital
+        async function fetchTransactions() {
+            try {
+                const response = await fetch('http://localhost:3001/api/hospital-transactions', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                const data = await response.json();
+                const requestsDiv = document.getElementById('pendingRequests');
+                const pledgesDiv = document.getElementById('pendingPledges');
+
+                if (data.success) {
+                    // Display Pending Requests
+                    requestsDiv.innerHTML = '';
+                    data.requests.forEach((request) => {
+                        requestsDiv.innerHTML += `
+                            <div class="transaction-card">
+                                <p><strong>Organ Request:</strong> ${request.organ_type} from ${request.user_name}</p>
+                                <p><strong>Location:</strong> ${request.location}</p>
+                                <button onclick="updateStatus(${request.id}, ${request.user_id}, 'fulfilled')">Approve</button>
+                                <button onclick="updateStatus(${request.id}, ${request.user_id}, 'rejected')">Reject</button>
+                            </div>`;
+                    });
+
+                    // Display Pending Pledges
+                    pledgesDiv.innerHTML = '';
+                    data.pledges.forEach((pledge) => {
+                        pledgesDiv.innerHTML += `
+                            <div class="transaction-card">
+                                <p><strong>Organ Pledge:</strong> ${pledge.organ_type} by ${pledge.user_name}</p>
+                                <p><strong>Location:</strong> ${pledge.location}</p>
+                                <button onclick="updateStatus(${pledge.id}, ${pledge.user_id}, 'fulfilled')">Approve</button>
+                                <button onclick="updateStatus(${pledge.id}, ${pledge.user_id}, 'rejected')">Reject</button>
+                            </div>`;
+                    });
+                } else {
+                    requestsDiv.innerHTML = `<div class="alert">${data.message}</div>`;
+                    pledgesDiv.innerHTML = `<div class="alert">${data.message}</div>`;
+                }
+            } catch (error) {
+                alert('An error occurred while fetching transactions. Please try again later.');
+            }
+        }
+
+        // Update the status of a transaction (Approve or Reject)
+        async function updateStatus(transactionId, userId, status) {
+            const confirmed = confirm(`Are you sure you want to mark this as ${status}?`);
+            if (confirmed) {
+                try {
+                    const response = await fetch('http://localhost:3001/api/organ-status', {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({ transaction_id: transactionId, user_id: userId, status }),
+                    });
+
+                    const data = await response.json();
+                    alert(data.message);
+                    if (data.success) {
+                        fetchTransactions(); // Refresh the transaction list after update
+                    }
+                } catch (error) {
+                    alert('An error occurred while updating the transaction status. Please try again.');
+                }
+            }
+        }
+
+        fetchTransactions();  // Fetch all pending requests and pledges
+    </script>
+</body>
+</html>
