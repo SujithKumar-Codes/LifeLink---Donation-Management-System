@@ -4,7 +4,7 @@ import requests
 location = '12.9141417,74.8559568'  # Example latitude and longitude
 radius = 10000  # 10 km radius
 keyword = 'blood bank'
-api_key = 'AIzaSyCes8sAmSevzGCkvRu195m5uRutGUHUxeo'  # Replace with your actual API key
+api_key = 'YOUR_API_KEY'  # Replace with your actual API key
 
 url = f'https://maps.googleapis.com/maps/api/place/nearbysearch/json'
 
