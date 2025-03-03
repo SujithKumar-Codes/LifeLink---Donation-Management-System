@@ -32,7 +32,7 @@ async function fetchBloodBanks(location, apiKey) {
 }
 
 // Usage example
-const apiKey = 'AIzaSyCes8sAmSevzGCkvRu195m5uRutGUHUxeo'; // Replace with your API key
+const apiKey = 'YOUR_API_KEY'; // Replace with your API key
 const location = '12.852100,74.911903'; // Replace with latitude,longitude (Bangalore in this case)
 
 fetchBloodBanks(location, apiKey).then(bloodBanks => {
