@@ -28,5 +28,5 @@ def check_google_api_key(api_key):
         print("HTTP Error. Status code:", response.status_code)
 
 # Replace 'YOUR_API_KEY' with your actual API key
-api_key = "AIzaSyA_Lgl0vpdmBeBE2Esh8R0rULSdGzZaLW0"
+api_key = "YOUR_API_KEY"
 check_google_api_key(api_key)
