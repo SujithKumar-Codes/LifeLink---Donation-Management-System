@@ -1,6 +1,7 @@
 # LifeLink - Organ & Blood Donation Management System
 
 ## 📌 Project Overview
+
 LifeLink is a web-based platform designed to streamline organ pledging, organ requests, and blood donation management. The system connects donors and recipients, ensuring a seamless and efficient process for life-saving donations.
 
 ## 🌟 Features
@@ -13,9 +14,9 @@ LifeLink is a web-based platform designed to streamline organ pledging, organ re
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript, EJS
+- **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Node.js, Express.js
-- **Database**: MongoDB
+- **Database**: MySQL
 - **Tools**: Postman (for API testing), GitHub (for version control)
 
 ## 🚀 Installation & Setup
@@ -34,7 +35,10 @@ LifeLink is a web-based platform designed to streamline organ pledging, organ re
    ```
 4. Set up environment variables (`.env` file):
    ```
-   MONGO_URI=your_mongodb_connection_string
+   DB_HOST=your_mysql_host
+   DB_USER=your_mysql_user
+   DB_PASSWORD=your_mysql_password
+   DB_NAME=your_database_name
    PORT=5000
    ```
 5. Start the server:
@@ -47,22 +51,25 @@ LifeLink is a web-based platform designed to streamline organ pledging, organ re
    ```
 
 ## 🛡️ Security & Privacy
-- User data is securely stored with MongoDB.
+
+- User data is securely stored with MySQL.
 - Authentication and authorization are implemented to protect sensitive information.
 
 ## 🚧 Future Enhancements
+
 - **Real-time Blood Availability Tracker**
 - **Integration with Hospitals & Blood Banks**
 - **Automated Email & SMS Notifications**
 - **AI-based Donor-Recipient Matching System**
 
 ## 🤝 Contribution Guidelines
+
 1. Fork the repository.
 2. Create a new branch for your feature/bug fix.
 3. Commit your changes with a clear message.
 4. Push to your fork and create a pull request.
 
 ## 📜 License
+
 This project is licensed under the MIT License.
 
----
